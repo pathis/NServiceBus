@@ -2,7 +2,9 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
+    using System.Threading;
     using NServiceBus.Licensing;
     using NUnit.Framework;
 
@@ -48,6 +50,24 @@
             var license = LicenseDeserializer.Deserialize(ResourceReader.ReadResourceAsString("Licensing.LicenseWithNonMaxThresholds.xml"));
             Assert.AreEqual(2, license.AllowedNumberOfWorkerNodes);
             Assert.AreEqual(2, license.MaxThroughputPerSecond);
+        }
+
+        [Test]
+        public void Should_parse_licenses_when_calendar_settings_are_different_from_nservicebus_default()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("ar-SA");
+
+            var licenses = new[]
+            {
+                ResourceReader.ReadResourceAsString("Licensing.LicenseWithAllProperties.xml"),
+                ResourceReader.ReadResourceAsString("Licensing.LicenseWithNoUpgradeProtection.xml"),
+                ResourceReader.ReadResourceAsString("Licensing.LicenseWithNonMaxThresholds.xml")
+            };
+
+            foreach (var license in licenses)
+            {
+                LicenseDeserializer.Deserialize(license);
+            }
         }
     }
 }
