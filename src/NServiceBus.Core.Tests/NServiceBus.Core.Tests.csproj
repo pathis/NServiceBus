@@ -147,7 +147,6 @@
     <Compile Include="Licensing\TimestampTests.cs" />
     <Compile Include="Licensing\LicenseExpiredFormDisplayerTests.cs" />
     <Compile Include="Licensing\TrialLicenseReaderTests.cs" />
-    <Compile Include="Licensing\UniversalDateParserTests.cs" />
     <Compile Include="Licensing\UserSidCheckerTests.cs" />
     <Compile Include="MessageConventionExtensionsTests.cs" />
     <Compile Include="DataBus\FileShare\AcceptanceTests.cs" />
