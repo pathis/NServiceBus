@@ -122,17 +122,9 @@
         {
             public ReceiverWithOrderedSagas()
             {
-                EndpointSetup<DefaultServer>();
+                EndpointSetup<DefaultServer>(c => c.ExecuteTheseHandlersFirst(typeof(Saga1), typeof(Saga2)));
             }
-
-            class EnsureOrdering : ISpecifyMessageHandlerOrdering
-            {
-                public void SpecifyOrder(Order order)
-                {
-                    order.Specify(First<Saga1>.Then<Saga2>());
-                }
-            }
-
+            
             public class MessageToSagaHandler : IHandleMessages<MessageToSaga>
             {
                 public IBus Bus { get; set; }
@@ -155,7 +147,6 @@
 
             public class Saga1 : Saga<Saga1.Saga1Data>, IAmStartedByMessages<StartSaga>, IHandleMessages<MessageToSaga>
             {
-
                 public void Handle(StartSaga message)
                 {
                 }
@@ -175,7 +166,6 @@
 
             public class Saga2 : Saga<Saga2.Saga2Data>, IHandleMessages<StartSaga>, IAmStartedByMessages<MessageToSaga>
             {
-
                 public void Handle(StartSaga message)
                 {
                 }
