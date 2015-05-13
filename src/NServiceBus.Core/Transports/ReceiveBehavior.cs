@@ -1,6 +1,7 @@
 namespace NServiceBus.Transports
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
 
@@ -14,9 +15,9 @@ namespace NServiceBus.Transports
         /// </summary>
         /// <param name="context"></param>
         /// <param name="next"></param>
-        public override void Invoke(IncomingContext context, Action<TransportReceiveContext> next)
+        public override Task Invoke(IncomingContext context, Func<TransportReceiveContext, Task> next)
         {
-            Invoke(context, x => next(new TransportReceiveContext(x, context)));
+            return Invoke(context, x => next(new TransportReceiveContext(x, context)));
         }
 
         //TODO: change to header and body ony
@@ -25,7 +26,7 @@ namespace NServiceBus.Transports
         /// </summary>
         /// <param name="context"></param>
         /// <param name="onMessage"></param>
-        protected abstract void Invoke(IncomingContext context, Action<IncomingMessage> onMessage);
+        protected abstract Task Invoke(IncomingContext context, Func<IncomingMessage, Task> onMessage);
 
         /// <summary>
         /// 

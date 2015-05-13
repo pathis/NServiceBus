@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
     using NUnit.Framework;
 
@@ -66,7 +67,7 @@
 
         public class RootToChildConnector : StageConnector<RootContext, ChildContext>
         {
-            public override void Invoke(RootContext context, Action<ChildContext> next)
+            public override Task Invoke(RootContext context, Func<ChildContext, Task> next)
             {
                 throw new NotImplementedException();
             }
@@ -75,7 +76,7 @@
 
         public class RootToChild2Connector : StageConnector<RootContext, ChildContextReachableButNotInheritingFromRootContext>
         {
-            public override void Invoke(RootContext context, Action<ChildContextReachableButNotInheritingFromRootContext> next)
+            public override Task Invoke(RootContext context, Func<ChildContextReachableButNotInheritingFromRootContext, Task> next)
             {
                 throw new NotImplementedException();
             }
@@ -83,7 +84,7 @@
 
         public class RootBehavior : Behavior<RootContext>
         {
-            public override void Invoke(RootContext context, Action next)
+            public override Task Invoke(RootContext context, Func<Task> next)
             {
                 throw new NotImplementedException();
             }
@@ -91,14 +92,14 @@
 
         public class ChildBehavior : Behavior<ChildContext>
         {
-            public override void Invoke(ChildContext context, Action next)
+            public override Task Invoke(ChildContext context, Func<Task> next)
             {
                 throw new NotImplementedException();
             }
         }
         public class NonReachableChildBehavior : Behavior<ChildContextReachableButNotInheritingFromRootContext>
         {
-            public override void Invoke(ChildContextReachableButNotInheritingFromRootContext context, Action next)
+            public override Task Invoke(ChildContextReachableButNotInheritingFromRootContext context, Func<Task> next)
             {
                 throw new NotImplementedException();
             }

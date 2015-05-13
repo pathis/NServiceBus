@@ -1,13 +1,14 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Features;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
 
     class ConvertLegacyEnumResponseToLegacyControlMessageBehavior : PhysicalOutgoingContextStageBehavior
     {
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             if (CallbackSupport.IsLegacyEnumResponse(context.MessageType))
             {
@@ -19,8 +20,7 @@
                 context.Body = new byte[0];
             }
 
-    
-            next();
+            return next();
         }
 
         public class Registration : RegisterStep

@@ -1,6 +1,7 @@
 namespace NServiceBus.Core.Tests.Pipeline
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Core.Tests.Features;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
@@ -59,12 +60,12 @@ namespace NServiceBus.Core.Tests.Pipeline
         {
             int sum;
 
-            public override void Invoke(IncomingContext context, Action next)
+            public override Task Invoke(IncomingContext context, Func<Task> next)
             {
                 var value = context.Get<int>("Value");
                 sum += value;
                 context.Set("Sum", sum);
-                next();
+                return next();
             }
         }
     }

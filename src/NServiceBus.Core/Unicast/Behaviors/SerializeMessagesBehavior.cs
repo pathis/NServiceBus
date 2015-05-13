@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Serialization;
@@ -20,7 +21,7 @@
             this.messageMetadataRegistry = messageMetadataRegistry;
         }
 
-        public override void Invoke(OutgoingContext context, Action<PhysicalOutgoingContextStageBehavior.Context> next)
+        public override Task Invoke(OutgoingContext context, Func<PhysicalOutgoingContextStageBehavior.Context, Task> next)
         {
             using (var ms = new MemoryStream())
             {
@@ -30,7 +31,7 @@
                 context.Headers[Headers.ContentType] = messageSerializer.ContentType;
 
                 context.Headers[Headers.EnclosedMessageTypes] = SerializeEnclosedMessageTypes(context.MessageType);
-                next(new PhysicalOutgoingContextStageBehavior.Context(ms.ToArray(), context));
+                return next(new PhysicalOutgoingContextStageBehavior.Context(ms.ToArray(), context));
             }
         }
 

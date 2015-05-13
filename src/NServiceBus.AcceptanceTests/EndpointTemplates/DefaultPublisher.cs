@@ -2,6 +2,7 @@ namespace NServiceBus.AcceptanceTests.EndpointTemplates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTesting.Support;
     using NServiceBus.Config.ConfigurationSource;
@@ -23,9 +24,9 @@ namespace NServiceBus.AcceptanceTests.EndpointTemplates
         {
             public ScenarioContext Context { get; set; }
 
-            public override void Invoke(OutgoingContext context, Action next)
+            public override async Task Invoke(OutgoingContext context, Func<Task> next)
             {
-                next();
+                await next();
 
                 List<string> subscribers;
 

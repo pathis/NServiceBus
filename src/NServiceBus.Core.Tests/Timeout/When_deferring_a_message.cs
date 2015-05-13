@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Timeout;
     using NServiceBus.Transports;
@@ -39,13 +40,13 @@
         }
 
         [Test]
-        public void Should_use_utc_when_comparing()
+        public async void Should_use_utc_when_comparing()
         {
             var deferrer = new DispatchMessageToTransportBehavior();
             var sender = new FakeMessageSender();
             deferrer.MessageSender = sender;
 
-            deferrer.Invoke(new PhysicalOutgoingContextStageBehavior.Context(null, new OutgoingContext(null, new SendMessageOptions("Destination"), new Dictionary<string, string>(), null, MessageIntentEnum.Send, null, null, null)), () => { });
+            await deferrer.Invoke(new PhysicalOutgoingContextStageBehavior.Context(null, new OutgoingContext(null, new SendMessageOptions("Destination"), new Dictionary<string, string>(), null, MessageIntentEnum.Send, null, null, null)), () => Task.FromResult(true));
 
             Assert.AreEqual(1, sender.Messages.Count);
         }

@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Hosting;
     using NServiceBus.Pipeline;
 
@@ -13,12 +14,12 @@
             this.hostInfo = hostInfo;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             context.PhysicalMessage.Headers[Headers.HostId] = hostInfo.HostId.ToString("N");
             context.PhysicalMessage.Headers[Headers.HostDisplayName] = hostInfo.DisplayName;
 
-            next();
+            return next();
         }
 
         public class Registration : RegisterStep

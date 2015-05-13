@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
     using NServiceBus.Outbox;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Transports;
@@ -11,7 +12,7 @@
     public class OutboxRecordBehaviorTests
     {
         [Test]
-        public void Should_not_store_the_message_if_handle_current_message_later_was_called()
+        public async void Should_not_store_the_message_if_handle_current_message_later_was_called()
         {
             var context = new PhysicalMessageProcessingStageBehavior.Context(new TransportReceiveContext(new IncomingMessage("id", new Dictionary<string, string>(), new MemoryStream()), null))
             {
@@ -19,7 +20,7 @@
             };
             context.Set(new OutboxMessage("SomeId"));
 
-            Invoke(context);
+            await Invoke(context);
 
             Assert.Null(fakeOutbox.StoredMessage);
         }
@@ -35,14 +36,15 @@
             };
         }
 
-        void Invoke(PhysicalMessageProcessingStageBehavior.Context context, bool shouldAbort = false)
+        Task Invoke(PhysicalMessageProcessingStageBehavior.Context context, bool shouldAbort = false)
         {
-            behavior.Invoke(context, () =>
+            return behavior.Invoke(context, () =>
             {
                 if (shouldAbort)
                 {
                     Assert.Fail("Pipeline should be aborted");
                 }
+                return Task.FromResult(true);
             });
         }
 

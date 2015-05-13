@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.MessagingBestPractices;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
@@ -15,7 +16,7 @@
             this.validations = validations;
         }
 
-        public override void Invoke(OutgoingContext context, Action next)
+        public override Task Invoke(OutgoingContext context, Func<Task> next)
         {
             //note: this check doesn't belong here. Will be moved in a different pull
             ValidateDestination(context);
@@ -27,7 +28,7 @@
                 Verify(context.MessageType, context.Intent);       
             }
             
-            next();
+            return next();
         }
 
         void Verify(Type messageType, MessageIntentEnum intent)

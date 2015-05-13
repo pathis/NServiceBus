@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using System.Transactions;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
@@ -14,17 +15,18 @@ namespace NServiceBus
             this.transactionOptions = transactionOptions;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             if (Transaction.Current != null)
             {
-                next();
+                await next();
                 return;
             }
 
+            // TODO: We need .NET 4.5.1 here!
             using (var tx = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
             {
-                next();
+                await next();
 
                 tx.Complete();
             }

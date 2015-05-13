@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using System.Transactions;
     using NServiceBus.Outbox;
     using NServiceBus.Pipeline;
@@ -20,7 +21,7 @@
         }
 
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             var messageId = context.PhysicalMessage.Id;
             OutboxMessage outboxMessage;
@@ -32,9 +33,10 @@
                 context.Set(outboxMessage);
 
                 //we use this scope to make sure that we escalate to DTC if the user is talking to another resource by misstake
+                // TODO: We need .NET 4.5.1 here!
                 using (var checkForEscalationScope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = transactionSettings.IsolationLevel, Timeout = transactionSettings.TransactionTimeout }))
                 {
-                    next();
+                    await next();
                     checkForEscalationScope.Complete();
                 }
 

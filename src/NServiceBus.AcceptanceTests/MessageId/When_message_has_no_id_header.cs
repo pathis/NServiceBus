@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.MessageId
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.Config;
@@ -68,19 +69,21 @@
             {
                 public When_message_has_no_id_header.Context ScenarioContext { get; set; }
 
-                public override void Invoke(Context ctx, Action next)
+                public override Task Invoke(Context ctx, Func<Task> next)
                 {
                     if (!ctx.PhysicalMessage.Headers.ContainsKey("ScenarioContextId"))
                     {
-                        return;
+                        return Task.FromResult(true);
                     }
                     var id = new Guid(ctx.PhysicalMessage.Headers["ScenarioContextId"]);
                     if (id != ScenarioContext.Id)
                     {
-                        return;
+                        return Task.FromResult(true);
                     }
                     ScenarioContext.MessageId = ctx.PhysicalMessage.Id;
                     ScenarioContext.MessageReceived = true;
+
+                    return Task.FromResult(true);
                 }
 
                 public class Registration : RegisterStep

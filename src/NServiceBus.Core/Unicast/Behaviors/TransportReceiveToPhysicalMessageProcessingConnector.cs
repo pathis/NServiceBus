@@ -32,12 +32,12 @@ namespace NServiceBus
             return base.Cooldown();
         }
 
-        public override void Invoke(TransportReceiveContext context, Action<PhysicalMessageProcessingStageBehavior.Context> next)
+        public override async Task Invoke(TransportReceiveContext context, Func<PhysicalMessageProcessingStageBehavior.Context, Task> next)
         {
             var physicalMessageContext = new PhysicalMessageProcessingStageBehavior.Context(context);
             try
             {
-                next(physicalMessageContext);
+                await next(physicalMessageContext);
                 if (physicalMessageContext.AbortReceiveOperation)
                 {
                     throw new MessageProcessingAbortedException();

@@ -29,9 +29,9 @@
 
         public Type Type { get { return type; } }
 
-        public void Invoke(BehaviorContext context, Action<BehaviorContext> next)
+        public Task Invoke(BehaviorContext context, Func<BehaviorContext, Task> next)
         {
-            invoker.Invoke(instance, context, next);
+            return invoker.Invoke(instance, context, next);
         }
 
         public void Initialize(PipelineInfo pipelineInfo)

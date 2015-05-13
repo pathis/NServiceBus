@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Outbox;
     using Pipeline;
 
@@ -8,9 +9,9 @@ namespace NServiceBus
     {
         public IOutboxStorage OutboxStorage { get; set; }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
-            next();
+            await next();
             
             if (context.handleCurrentMessageLaterWasCalled)
             {

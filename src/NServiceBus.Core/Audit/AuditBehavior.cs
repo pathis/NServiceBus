@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Hosting;
     using NServiceBus.Pipeline;
     using NServiceBus.Settings;
@@ -19,9 +20,9 @@
 
         public ReadOnlySettings Settings { get; set; }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
-            next();
+            await next();
 
             context.PhysicalMessage.RevertToOriginalBodyIfNeeded();
 

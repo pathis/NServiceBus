@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Transports;
     using NServiceBus.Unicast;
@@ -15,11 +16,11 @@
 
         public IDeferMessages MessageDeferral { get; set; }
 
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
-           InvokeNative(context);
-         
-            next();
+            InvokeNative(context);
+
+            return next();
         }
 
         public void InvokeNative(Context context)
@@ -98,23 +99,23 @@
 
         void SendOrDefer(OutgoingMessage message, SendMessageOptions options)
         {
-            if ((options.DelayDeliveryFor.HasValue && options.DelayDeliveryFor > TimeSpan.Zero) || 
-                (options.DeliverAt.HasValue &&  options.DeliverAt.Value.ToUniversalTime() > DateTime.UtcNow))
+            if ((options.DelayDeliveryFor.HasValue && options.DelayDeliveryFor > TimeSpan.Zero) ||
+                (options.DeliverAt.HasValue && options.DeliverAt.Value.ToUniversalTime() > DateTime.UtcNow))
             {
                 SetIsDeferredHeader(message.Headers);
                 MessageDeferral.Defer(message, new TransportDeferOptions(
-                    options.Destination, 
+                    options.Destination,
                     options.DelayDeliveryFor,
                     options.DeliverAt,
-                    options.NonDurable ?? true, 
+                    options.NonDurable ?? true,
                     options.EnlistInReceiveTransaction));
 
                 return;
             }
 
-            MessageSender.Send(message, new TransportSendOptions(   options.Destination, 
-                                                                    options.TimeToBeReceived, 
-                                                                    options.NonDurable ?? true, 
+            MessageSender.Send(message, new TransportSendOptions(options.Destination,
+                                                                    options.TimeToBeReceived,
+                                                                    options.NonDurable ?? true,
                                                                     options.EnlistInReceiveTransaction));
         }
 
@@ -132,6 +133,6 @@
             MessagePublisher.Publish(message, publishOptions);
         }
 
-     
+
     }
 }

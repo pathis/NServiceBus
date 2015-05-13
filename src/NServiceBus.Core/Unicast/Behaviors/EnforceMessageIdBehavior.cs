@@ -1,18 +1,19 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
 
     class EnforceMessageIdBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             if (string.IsNullOrWhiteSpace(context.PhysicalMessage.Id))
             {     
                 throw new MessageDeserializationException("Message without message id detected");    
             }
 
-            next();
+            return next();
         }
 
         public class Registration : RegisterStep

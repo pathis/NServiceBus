@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Outbox;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Unicast;
@@ -14,7 +15,7 @@ namespace NServiceBus
             this.dispatchMessageToTransportBehavior = dispatchMessageToTransportBehavior;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             OutboxMessage currentOutboxMessage;
 
@@ -52,7 +53,7 @@ namespace NServiceBus
             {
                 dispatchMessageToTransportBehavior.InvokeNative(context);
 
-                next();
+                await next();
             }
         }
     }

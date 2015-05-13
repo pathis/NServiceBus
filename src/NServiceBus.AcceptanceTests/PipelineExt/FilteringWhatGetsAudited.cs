@@ -2,6 +2,7 @@
 namespace NServiceBus.AcceptanceTests.PipelineExt
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.Pipeline;
@@ -55,14 +56,14 @@ namespace NServiceBus.AcceptanceTests.PipelineExt
 
             class SetFiltering : LogicalMessageProcessingStageBehavior
             {
-                public override void Invoke(Context context, Action next)
+                public override Task Invoke(Context context, Func<Task> next)
                 {
                     if (context.MessageType == typeof(MessageToBeAudited))
                     {
                         context.Get<AuditFilterResult>().DoNotAuditMessage = true;
                     }
 
-                    next();
+                    return next();
                 }
 
                 class AuditFilteringOverride : INeedInitialization
@@ -83,11 +84,11 @@ namespace NServiceBus.AcceptanceTests.PipelineExt
             {
                 public IAuditMessages MessageAuditer { get; set; }
 
-                public override void Invoke(Context context, Action next)
+                public override async Task Invoke(Context context, Func<Task> next)
                 {
                     var auditResult = new AuditFilterResult();
                     context.Set(auditResult);
-                    next();
+                    await next();
 
                     //note: and rule operating on the raw TransportMessage can be applied here if needed.
                     // Access to the message is through: context.PhysicalMessage. Eg:  context.PhysicalMessage.Headers.ContainsKey("NServiceBus.ControlMessage")

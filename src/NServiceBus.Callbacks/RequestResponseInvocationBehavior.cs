@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.Callbacks;
     using NServiceBus.Features;
     using NServiceBus.Pipeline;
@@ -16,14 +17,14 @@
             this.requestResponseStateLookup = requestResponseStateLookup;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             if (HandleCorrelatedMessage(context.PhysicalMessage, context))
             {
                 context.MessageHandled = true;
             }
 
-            next();
+            return next();
         }
 
         bool HandleCorrelatedMessage(TransportMessage transportMessage, Context context)

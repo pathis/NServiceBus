@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using NServiceBus.Logging;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
@@ -9,7 +10,7 @@
 
     class LogOutgoingMessageBehavior : Behavior<OutgoingContext>
     {
-        public override void Invoke(OutgoingContext context, Action next)
+        public override Task Invoke(OutgoingContext context, Func<Task> next)
         {
             var options = context.DeliveryMessageOptions as SendMessageOptions;
 
@@ -27,8 +28,7 @@
                     string.Join(", ", context.Headers.Select(h => h.Key + ":" + h.Value).ToArray()));
             }
 
-            next();
-
+            return next();
         }
 
         static ILog log = LogManager.GetLogger("LogOutgoingMessage");

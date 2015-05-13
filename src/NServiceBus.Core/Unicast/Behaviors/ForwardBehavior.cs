@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
     using NServiceBus.Transports;
 
@@ -11,9 +12,9 @@
         public string ForwardReceivedMessagesTo { get; set; }
 
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
-            next();
+            await next();
 
             context.PhysicalMessage.RevertToOriginalBodyIfNeeded();
 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Transactions;
     using NServiceBus.DataBus;
     using NServiceBus.Pipeline;
@@ -15,7 +16,7 @@
 
         public Conventions Conventions { get; set; }
 
-        public override void Invoke(OutgoingContext context, Action next)
+        public override Task Invoke(OutgoingContext context, Func<Task> next)
         {
             var timeToBeReceived = context.DeliveryMessageOptions.TimeToBeReceived;
             var message = context.MessageInstance;
@@ -65,7 +66,7 @@
                 }
             }
 
-            next();
+            return next();
         }
 
         public class Registration : RegisterStep

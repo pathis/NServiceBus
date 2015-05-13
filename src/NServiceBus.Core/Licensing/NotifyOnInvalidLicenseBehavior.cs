@@ -2,16 +2,17 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using Logging;
     using Pipeline;
 
     class NotifyOnInvalidLicenseBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             context.PhysicalMessage.Headers[Headers.HasLicenseExpired] = true.ToString().ToLower();
 
-            next();
+            await next();
 
             if (Debugger.IsAttached)
             {

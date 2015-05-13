@@ -1,19 +1,20 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Saga;
     using Pipeline;
     using Pipeline.Contexts;
 
     class PopulateAutoCorrelationHeadersForRepliesBehavior : Behavior<OutgoingContext>
     {
-        public override void Invoke(OutgoingContext context, Action next)
+        public override Task Invoke(OutgoingContext context, Func<Task> next)
         {
             AttachSagaDetailsToOutGoingMessage(context);
 
             FlowDetailsForRequestingSagaToOutgoingMessage(context);
 
-            next();
+            return next();
         }
 
         static void FlowDetailsForRequestingSagaToOutgoingMessage(OutgoingContext context)

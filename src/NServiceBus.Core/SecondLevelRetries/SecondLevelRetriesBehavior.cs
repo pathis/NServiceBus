@@ -2,6 +2,7 @@ namespace NServiceBus
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using NServiceBus.Pipeline;
     using NServiceBus.SecondLevelRetries;
     using NServiceBus.Transports;
@@ -19,11 +20,11 @@ namespace NServiceBus
             this.notifications = notifications;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             try
             {
-                next();
+                await next();
             }
             catch (MessageDeserializationException)
             {
@@ -73,11 +74,6 @@ namespace NServiceBus
         }  
         
         public const string RetriesTimestamp = "NServiceBus.Retries.Timestamp";
-
-
-
-
-
 
         public class Registration : RegisterStep
         {

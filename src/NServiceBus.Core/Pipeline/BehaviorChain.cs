@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading.Tasks;
     using Janitor;
     using NServiceBus.Pipeline;
 
@@ -18,7 +19,7 @@
             itemDescriptors = behaviorList.ToArray();
         }
 
-        public void Invoke(BehaviorContextStacker contextStacker)
+        public async Task Invoke(BehaviorContextStacker contextStacker)
         {
             var outerPipe = false;
 
@@ -32,7 +33,7 @@
                     notifications.Pipeline.InvokeReceiveStarted(steps);
                 }
 
-                InvokeNext(context, contextStacker, 0);
+                await InvokeNext(context, contextStacker, 0);
 
                 if (outerPipe)
                 {
@@ -62,7 +63,7 @@
             
         }
 
-        BehaviorContext InvokeNext(BehaviorContext context, BehaviorContextStacker contextStacker, int currentIndex)
+        async Task<BehaviorContext> InvokeNext(BehaviorContext context, BehaviorContextStacker contextStacker, int currentIndex)
         {
             Guard.AgainstNull(context, "context");
 
@@ -81,10 +82,10 @@
                 var duration = Stopwatch.StartNew();
 
                 BehaviorContext innermostContext = null;
-                behavior.Invoke(context, newContext =>
+                await behavior.Invoke(context, async newContext =>
                 {
                     duration.Stop();
-                    innermostContext = InvokeNext(newContext, contextStacker, currentIndex + 1);
+                    innermostContext = await InvokeNext(newContext, contextStacker, currentIndex + 1);
                     duration.Start();
                 });
 

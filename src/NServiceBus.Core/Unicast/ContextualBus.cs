@@ -126,7 +126,7 @@ namespace NServiceBus.Unicast
                 options.Extensions);
 
 
-            outgoingPipeline.Invoke(outgoingContext);
+            outgoingPipeline.Invoke(outgoingContext).GetAwaiter().GetResult();
         }
 
         void ApplyStaticHeaders(Dictionary<string, string> messageHeaders)
@@ -389,7 +389,7 @@ namespace NServiceBus.Unicast
                 message,
                 context);
 
-            outgoingPipeline.Invoke(outgoingContext);
+            outgoingPipeline.Invoke(outgoingContext).GetAwaiter().GetResult();
         }
 
         void ApplyHostRelatedHeaders(Dictionary<string, string> headers)

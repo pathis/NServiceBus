@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.NonDTC
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NServiceBus.AcceptanceTests.ScenarioDescriptors;
@@ -82,11 +83,11 @@
             }
         }
 
-        public override void Invoke(Context context, Action next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
             if (!context.PhysicalMessage.Headers[Headers.EnclosedMessageTypes].Contains(typeof(When_blowing_up_just_after_dispatch.PlaceOrder).Name))
             {
-                next();
+                await next();
                 return;
             }
 
@@ -97,10 +98,8 @@
                 return;
 
             }
-            else
-            {
-                next();
-            }
+
+            await next();
 
 
             called = true;

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using NServiceBus.Callbacks;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
@@ -15,7 +16,7 @@
             this.lookup = lookup;
         }
 
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             RequestResponseParameters parameters;
 
@@ -33,7 +34,7 @@
                 lookup.RegisterState(messageId, parameters.TaskCompletionSource);
             }
 
-            next();
+            return next();
         }
 
         public class RequestResponseParameters

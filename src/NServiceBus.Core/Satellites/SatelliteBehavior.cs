@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// 
@@ -12,9 +13,11 @@ namespace NServiceBus
         /// </summary>
         /// <param name="context"></param>
         /// <param name="next"></param>
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             context.Set("TransportReceiver.MessageHandledSuccessfully", Handle(context.PhysicalMessage));
+
+            return Task.FromResult(true);
         }
 
         /// <summary>

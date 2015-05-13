@@ -23,7 +23,7 @@
         /// </summary>
         /// <param name="context"></param>
         /// <param name="next"></param>
-        public abstract void Invoke(TFrom context, Action<TTo> next);
+        public abstract Task Invoke(TFrom context, Func<TTo, Task> next);
 
         /// <summary>
         /// Initialized the behavior with information about the just constructed pipeline.

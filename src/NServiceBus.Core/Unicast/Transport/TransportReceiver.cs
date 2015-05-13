@@ -51,7 +51,7 @@ namespace NServiceBus.Unicast.Transport
             {
                 try
                 {
-                    pipeline.Invoke(context);
+                    pipeline.Invoke(context).GetAwaiter().GetResult();
                 }
                 catch (MessageProcessingAbortedException)
                 {

@@ -1,10 +1,11 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
 
     class ProcessingStatisticsBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             string timeSentString;
             var headers = context.PhysicalMessage.Headers;
@@ -18,7 +19,7 @@
 
             try
             {
-                next();
+                return next();
             }
             finally
             {

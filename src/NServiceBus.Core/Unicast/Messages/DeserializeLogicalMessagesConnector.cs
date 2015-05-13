@@ -5,6 +5,7 @@
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Logging;
     using NServiceBus.Unicast.Messages;
     using NServiceBus.Unicast.Transport;
@@ -25,18 +26,18 @@
 
         public MessageMetadataRegistry MessageMetadataRegistry { get; set; }
 
-        public override void Invoke(PhysicalMessageProcessingStageBehavior.Context context, Action<LogicalMessagesProcessingStageBehavior.Context> next)
+        public override async Task Invoke(PhysicalMessageProcessingStageBehavior.Context context, Func<LogicalMessagesProcessingStageBehavior.Context, Task> next)
         {
             var transportMessage = context.PhysicalMessage;
 
             if (TransportMessageExtensions.IsControlMessage(transportMessage.Headers))
             {
                 log.Info("Received a control message. Skipping deserialization as control message data is contained in the header.");
-                next(new LogicalMessagesProcessingStageBehavior.Context(Enumerable.Empty<LogicalMessage>(), context));
+                await next(new LogicalMessagesProcessingStageBehavior.Context(Enumerable.Empty<LogicalMessage>(), context));
                 return;
             }
             var messages = ExtractWithExceptionHandling(transportMessage);
-            next(new LogicalMessagesProcessingStageBehavior.Context(messages, context));
+            await next(new LogicalMessagesProcessingStageBehavior.Context(messages, context));
         }
 
         List<LogicalMessage> ExtractWithExceptionHandling(TransportMessage transportMessage)

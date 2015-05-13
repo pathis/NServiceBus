@@ -24,10 +24,10 @@ namespace NServiceBus
             return base.Cooldown();
         }
 
-        public override void Invoke(Context context, Action next)
+        public override Task Invoke(Context context, Func<Task> next)
         {
             counter.Increment();
-            next();
+            return next();
         }
     }
 }

@@ -1,19 +1,21 @@
 ﻿namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
     using NServiceBus.Features;
     using NServiceBus.Pipeline;
     using NServiceBus.Pipeline.Contexts;
 
     class SetLegacyReturnCodeBehavior : Behavior<OutgoingContext>
     {
-        public override void Invoke(OutgoingContext context, Action next)
+        public override Task Invoke(OutgoingContext context, Func<Task> next)
         {
             if (CallbackSupport.IsLegacyEnumResponse(context.MessageType))
             {
                 context.Headers[Headers.ReturnMessageErrorCodeHeader] = ((dynamic)context.MessageInstance).ReturnCode;
             }
-            next();
+
+            return next();
         }
 
         public class Registration : RegisterStep
