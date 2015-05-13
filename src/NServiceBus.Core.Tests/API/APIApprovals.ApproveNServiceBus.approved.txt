@@ -224,6 +224,7 @@ namespace NServiceBus
     public class static DispatchContextExtensions
     {
         public static void SetHeader(this NServiceBus.Pipeline.Contexts.OutgoingContext context, string key, string value) { }
+        public static void SetHeader(this NServiceBus.Extensibility.ExtendableOptions context, string key, string value) { }
         public static void SetHeader(this NServiceBus.Pipeline.Contexts.PhysicalOutgoingContextStageBehavior.Context context, string key, string value) { }
     }
     public class static DurableMessagesConfig
@@ -605,13 +606,11 @@ namespace NServiceBus
     public class SendLocalOptions : NServiceBus.Extensibility.ExtendableOptions
     {
         public SendLocalOptions(string correlationId = null, System.Nullable<System.DateTime> deliverAt = null, System.Nullable<System.TimeSpan> delayDeliveryFor = null) { }
-        public NServiceBus.SendLocalOptions AddHeader(string key, string value) { }
         public NServiceBus.SendLocalOptions SetCustomMessageId(string messageId) { }
     }
     public class SendOptions : NServiceBus.Extensibility.ExtendableOptions
     {
         public SendOptions(string destination = null, string correlationId = null, System.Nullable<System.DateTime> deliverAt = null, System.Nullable<System.TimeSpan> delayDeliveryFor = null) { }
-        public NServiceBus.SendOptions AddHeader(string key, string value) { }
         public NServiceBus.SendOptions SetCustomMessageId(string messageId) { }
     }
     public class static SerializationConfigExtensions

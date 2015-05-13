@@ -228,7 +228,7 @@ namespace NServiceBus.Unicast
 
             var sendOptions = new SendMessageOptions(MessageBeingProcessed.ReplyToAddress);
 
-            SendMessage(null, correlationId, MessageIntentEnum.Reply, new Dictionary<string, string>(), sendOptions, message.GetType(), message, options.Extensions);
+            SendMessage(null, correlationId, MessageIntentEnum.Reply, sendOptions, message.GetType(), message, options.Extensions);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace NServiceBus.Unicast
 
             var sendOptions = new SendMessageOptions(destination, deliverAt, delayDeliveryFor);
 
-            SendMessage(options.MessageId, options.CorrelationId, options.Intent, options.Headers, sendOptions, messageType, message, options.Extensions);
+            SendMessage(options.MessageId, options.CorrelationId, options.Intent, sendOptions, messageType, message, options.Extensions);
         }
 
         public void SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
@@ -311,7 +311,7 @@ namespace NServiceBus.Unicast
 
             var sendOptions = new SendMessageOptions(destination, deliverAt, delayDeliveryFor);
 
-            SendMessage(options.MessageId, options.CorrelationId, MessageIntentEnum.Send, options.Headers, sendOptions, message.GetType(), message, options.Extensions);
+            SendMessage(options.MessageId, options.CorrelationId, MessageIntentEnum.Send, sendOptions, message.GetType(), message, options.Extensions);
         }
 
         List<string> GetAtLeastOneAddressForMessageType(Type messageType)
@@ -341,9 +341,9 @@ namespace NServiceBus.Unicast
 
       
 
-        void SendMessage(string messageId, string correlationId, MessageIntentEnum intent, Dictionary<string, string> messageHeaders, SendMessageOptions sendOptions, Type messageType, object message, OptionExtensionContext context)
+        void SendMessage(string messageId, string correlationId, MessageIntentEnum intent, SendMessageOptions sendOptions, Type messageType, object message, OptionExtensionContext context)
         {
-            var headers = new Dictionary<string, string>(messageHeaders);
+            var headers = new Dictionary<string, string>();
 
             if (string.IsNullOrEmpty(messageId))
             {

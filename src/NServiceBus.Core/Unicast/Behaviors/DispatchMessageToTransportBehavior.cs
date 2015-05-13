@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using NServiceBus.Extensibility;
     using NServiceBus.Pipeline.Contexts;
     using NServiceBus.Transports;
     using NServiceBus.Unicast;
@@ -164,6 +165,18 @@
         /// <param name="key">The header key</param>
         /// <param name="value">The header value</param>
         public static void SetHeader(this OutgoingContext context, string key, string value)
+        {
+            context.Extensions.GetOrCreate<DispatchMessageToTransportBehavior.State>()
+                .Headers[key] = value;
+        }
+
+        /// <summary>
+        /// Allows headers to be set
+        /// </summary>
+        /// <param name="context">Context to extend</param>
+        /// <param name="key">The header key</param>
+        /// <param name="value">The header value</param>
+        public static void SetHeader(this ExtendableOptions context, string key, string value)
         {
             context.Extensions.GetOrCreate<DispatchMessageToTransportBehavior.State>()
                 .Headers[key] = value;
