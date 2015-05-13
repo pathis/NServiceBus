@@ -118,7 +118,6 @@ namespace NServiceBus.Unicast
             var outgoingContext = new OutgoingContext(
                 incomingContext,
                 deliveryOptions,
-                headers,
                 CombGuid.Generate().ToString(),
                 MessageIntentEnum.Publish,
                 messageType,
@@ -126,6 +125,11 @@ namespace NServiceBus.Unicast
                 options.Extensions);
 
 
+            //todo: just for now
+            foreach (var header in headers)
+            {
+                outgoingContext.SetHeader(header.Key, header.Value);
+            }
             outgoingPipeline.Invoke(outgoingContext);
         }
 
@@ -363,15 +367,22 @@ namespace NServiceBus.Unicast
 
             ApplyHostRelatedHeaders(headers);
 
+            
+
             var outgoingContext = new OutgoingContext(
                 incomingContext,
                 sendOptions,
-                headers,
                 messageId,
                 intent,
                 messageType,
                 message,
                 context);
+
+            //todo: just for now
+            foreach (var header in headers)
+            {
+                outgoingContext.SetHeader(header.Key,header.Value);
+            }
 
             outgoingPipeline.Invoke(outgoingContext);
         }
