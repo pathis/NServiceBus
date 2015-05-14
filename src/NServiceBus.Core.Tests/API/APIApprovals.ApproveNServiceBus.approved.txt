@@ -673,10 +673,10 @@ namespace NServiceBus
             "removed in version 7.0.0.", true)]
         public TransportMessage() { }
         public byte[] Body { get; set; }
-        public string CorrelationId { get; set; }
+        public string CorrelationId { get; }
         public System.Collections.Generic.Dictionary<string, string> Headers { get; }
         public string Id { get; }
-        public NServiceBus.MessageIntentEnum MessageIntent { get; set; }
+        public NServiceBus.MessageIntentEnum MessageIntent { get; }
         [System.ObsoleteAttribute("For sending purposes use DeliveryMessageOptions.NonDurable (note the negation). W" +
             "hen receiving look at the new \'NServiceBus.NonDurableMessage\' header. Will be re" +
             "moved in version 7.0.0.", true)]
