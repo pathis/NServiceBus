@@ -8,7 +8,6 @@ namespace NServiceBus
     /// </summary>
     public class SendOptions:ExtendableOptions
     {
-        internal MessageIntentEnum Intent = MessageIntentEnum.Send;
         readonly DateTime? at;
         readonly TimeSpan? delay;
       

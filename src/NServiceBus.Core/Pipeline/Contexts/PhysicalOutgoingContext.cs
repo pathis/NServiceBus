@@ -26,7 +26,6 @@
                 Body = body;
                 DeliveryMessageOptions = parentContext.DeliveryMessageOptions;
                 MessageType = parentContext.MessageType;
-                Intent = parentContext.Intent;
                 Extensions = parentContext.Extensions;
             }
 
@@ -44,11 +43,6 @@
             /// 
             /// </summary>
             public byte[] Body { get; set; }
-
-            /// <summary>
-            /// The intent of this message
-            /// </summary>
-            public MessageIntentEnum Intent { get; private set; }
 
             /// <summary>
             /// Place for extensions to store their data

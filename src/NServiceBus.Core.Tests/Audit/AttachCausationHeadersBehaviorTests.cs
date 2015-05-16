@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using NServiceBus.Extensibility;
     using NServiceBus.Pipeline.Contexts;
     using NUnit.Framework;
 
@@ -67,7 +66,7 @@
 
         static PhysicalOutgoingContextStageBehavior.Context InitializeContext()
         {
-            var context = new PhysicalOutgoingContextStageBehavior.Context(null, new OutgoingContext(null, null, MessageIntentEnum.Send, null, null, new OptionExtensionContext()));
+            var context = new PhysicalOutgoingContextStageBehavior.Context(null, new OutgoingContext(null, null, null, null, new SendOptions()));
             return context;
         }
 
