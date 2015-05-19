@@ -131,6 +131,7 @@
     <Compile Include="MessageMutator\IMutateOutgoingPhysicalContext.cs" />
     <Compile Include="MessageMutator\OutgoingPhysicalMutatorContext.cs" />
     <Compile Include="Extensibility\OptionExtensionContext.cs" />
+    <Compile Include="Outbox\OutboxRoutingStrategy.cs" />
     <Compile Include="Pipeline\PipelineTerminator.cs" />
     <Compile Include="Routing\MessagingBestPractices\BestPracticeEnforcement.cs" />
     <Compile Include="Routing\MessagingBestPractices\OptionExtensions.cs" />
