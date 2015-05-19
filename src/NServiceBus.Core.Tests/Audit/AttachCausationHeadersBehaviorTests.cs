@@ -77,7 +77,7 @@
     {
         public static void AssertHeaderWasSet(this PhysicalOutgoingContextStageBehavior.Context context, string key, Predicate<string> predicate)
         {
-            var state = context.Extensions.GetOrCreate<DispatchMessageToTransportBehavior.State>();
+            var state = context.Extensions.GetOrCreate<DispatchMessageToTransportTerminator.State>();
 
             string current;
 
