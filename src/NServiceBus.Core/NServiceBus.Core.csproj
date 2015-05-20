@@ -149,6 +149,7 @@
     <Compile Include="ReplyOptions.cs" />
     <Compile Include="Routing\RouteMessageBehavior.cs" />
     <Compile Include="Routing\RoutingContextExtensions.cs" />
+    <Compile Include="Routing\RoutingFeature.cs" />
     <Compile Include="Satellites\SatelliteBehavior.cs" />
     <Compile Include="SendLocalOptions.cs" />
     <Compile Include="SendOptions.cs" />
