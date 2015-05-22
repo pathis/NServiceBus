@@ -53,13 +53,13 @@
 
         class FakeMessageSender : ISendMessages
         {
-
             public List<OutgoingMessage> Messages = new List<OutgoingMessage>();
 
-
-            public void Send(OutgoingMessage message, TransportSendOptions sendOptions)
+            public Task Send(OutgoingMessage message, TransportSendOptions sendOptions)
             {
                 Messages.Add(message);
+
+                return Task.FromResult(true);
             }
         }
     }

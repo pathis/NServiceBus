@@ -20,7 +20,7 @@
         /// <param name="requestMessage">The request message.</param>
         /// <param name="options">The options for the send.</param>
         /// <returns>A task which contains the response when it is completed.</returns>
-        public static Task<TResponse> RequestWithTransientlyHandledResponseAsync<TResponse>(this IBus bus, object requestMessage, SendOptions options)
+        public static async Task<TResponse> RequestWithTransientlyHandledResponseAsync<TResponse>(this IBus bus, object requestMessage, SendOptions options)
         {
             if (requestMessage == null)
             {
@@ -45,9 +45,9 @@
             var taskCompletionSourceAdapter = new TaskCompletionSourceAdapter(tcs);
             options.RegisterTokenSource(taskCompletionSourceAdapter);
 
-            bus.Send(requestMessage, options);
+            await bus.Send(requestMessage, options);
 
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@
         /// <param name="requestMessage">The request message.</param>
         /// <param name="options">The options for the send.</param>
         /// <returns>A task which contains the response when it is completed.</returns>
-        public static Task<TResponse> RequestWithTransientlyHandledResponseAsync<TResponse>(this IBus bus, object requestMessage, SendLocalOptions options)
+        public static async Task<TResponse> RequestWithTransientlyHandledResponseAsync<TResponse>(this IBus bus, object requestMessage, SendLocalOptions options)
         {
             if (requestMessage == null)
             {
@@ -85,9 +85,9 @@
 
             options.RegisterTokenSource(new TaskCompletionSourceAdapter(tcs));
 
-            bus.SendLocal(requestMessage, options);
+            await bus.SendLocal(requestMessage, options);
 
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         private static void RegisterTokenSource(this ExtendableOptions options, TaskCompletionSourceAdapter adapter)

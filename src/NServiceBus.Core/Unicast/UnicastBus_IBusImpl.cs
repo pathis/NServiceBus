@@ -2,6 +2,8 @@
 
 namespace NServiceBus.Unicast
 {
+    using System.Threading.Tasks;
+
     public partial class UnicastBus
     {
         /// <summary>
@@ -9,12 +11,12 @@ namespace NServiceBus.Unicast
         /// </summary>
         /// <param name="message">The message to publish</param>
         /// <param name="options">The options for this message</param>
-        public void Publish(object message,NServiceBus.PublishOptions options)
+        public Task Publish(object message,NServiceBus.PublishOptions options)
         {
             Guard.AgainstNull(message, "message");
             Guard.AgainstNull(options, "options");
 
-            busImpl.Publish(message,options);
+            return busImpl.Publish(message,options);
         }
 
         /// <summary>
@@ -23,12 +25,12 @@ namespace NServiceBus.Unicast
         /// <typeparam name="T"></typeparam>
         /// <param name="messageConstructor"></param>
         /// <param name="options">Options for this event</param>
-        public void Publish<T>(Action<T> messageConstructor,NServiceBus.PublishOptions options)
+        public Task Publish<T>(Action<T> messageConstructor, NServiceBus.PublishOptions options)
         {
             Guard.AgainstNull(messageConstructor, "messageConstructor");
             Guard.AgainstNull(options, "options");
 
-            busImpl.Publish(messageConstructor,options);
+            return busImpl.Publish(messageConstructor,options);
         }
 
         /// <summary>
@@ -37,9 +39,9 @@ namespace NServiceBus.Unicast
         /// <param name="message"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public void Send(object message, NServiceBus.SendOptions options)
+        public Task Send(object message, NServiceBus.SendOptions options)
         {
-            busImpl.Send(message, options);
+            return busImpl.Send(message, options);
         }
 
 
@@ -50,9 +52,9 @@ namespace NServiceBus.Unicast
         /// <param name="messageConstructor"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public void Send<T>(Action<T> messageConstructor, NServiceBus.SendOptions options)
+        public Task Send<T>(Action<T> messageConstructor, NServiceBus.SendOptions options)
         {
-            busImpl.Send(messageConstructor, options);
+            return busImpl.Send(messageConstructor, options);
         }
 
         /// <summary>
@@ -97,10 +99,10 @@ namespace NServiceBus.Unicast
         /// <see cref="IBus.Reply"/>
         /// </summary>
         /// <param name="message"></param>
-        public void Reply(object message)
+        public Task Reply(object message)
         {
             Guard.AgainstNull(message, "message");
-            busImpl.Reply(message);
+            return busImpl.Reply(message);
         }
 
         /// <summary>
@@ -108,10 +110,10 @@ namespace NServiceBus.Unicast
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="messageConstructor"></param>
-        public void Reply<T>(Action<T> messageConstructor)
+        public Task Reply<T>(Action<T> messageConstructor)
         {
             Guard.AgainstNull(messageConstructor, "messageConstructor");
-            busImpl.Reply(messageConstructor);
+            return busImpl.Reply(messageConstructor);
         }
 
         /// <summary>
@@ -119,9 +121,9 @@ namespace NServiceBus.Unicast
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <param name="options">The options for the send.</param>
-        public void SendLocal(object message, SendLocalOptions options)
+        public Task SendLocal(object message, SendLocalOptions options)
         {
-            busImpl.SendLocal(message, options);
+            return busImpl.SendLocal(message, options);
         }
 
         /// <summary>
@@ -130,27 +132,27 @@ namespace NServiceBus.Unicast
         /// <typeparam name="T">The type of message, usually an interface.</typeparam>
         /// <param name="messageConstructor">An action which initializes properties of the message</param>
         /// <param name="options">The options for the send.</param>
-        public void SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
+        public Task SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
         {
-            busImpl.SendLocal(messageConstructor, options);
+            return busImpl.SendLocal(messageConstructor, options);
         }
 
         /// <summary>
         /// <see cref="IBus.HandleCurrentMessageLater"/>
         /// </summary>
-        public void HandleCurrentMessageLater()
+        public Task HandleCurrentMessageLater()
         {
-            busImpl.HandleCurrentMessageLater();
+            return busImpl.HandleCurrentMessageLater();
         }
 
         /// <summary>
         /// <see cref="IBus.ForwardCurrentMessageTo"/>
         /// </summary>
         /// <param name="destination"></param>
-        public void ForwardCurrentMessageTo(string destination)
+        public Task ForwardCurrentMessageTo(string destination)
         {
             Guard.AgainstNullAndEmpty(destination, "destination");
-            busImpl.ForwardCurrentMessageTo(destination);
+            return busImpl.ForwardCurrentMessageTo(destination);
         }
 
         /// <summary>

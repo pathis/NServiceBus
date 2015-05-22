@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Syntactic sugar for IBus
@@ -12,12 +13,12 @@ namespace NServiceBus
         /// </summary>
         /// <param name="bus">Object beeing extended</param>
         /// <param name="message">The message to send.</param>
-        public static void SendLocal(this IBus bus, object message)
+        public static Task SendLocal(this IBus bus, object message)
         {
             Guard.AgainstNull(bus, "bus");
             Guard.AgainstNull(message, "message");
 
-            bus.SendLocal(message, new SendLocalOptions());
+            return bus.SendLocal(message, new SendLocalOptions());
         }
 
         /// <summary>
@@ -26,12 +27,12 @@ namespace NServiceBus
         /// <typeparam name="T">The type of message, usually an interface.</typeparam>
         /// <param name="bus">Object beeing extended</param>
         /// <param name="messageConstructor">An action which initializes properties of the message</param>
-        public static void SendLocal<T>(this IBus bus, Action<T> messageConstructor)
+        public static Task SendLocal<T>(this IBus bus, Action<T> messageConstructor)
         {
             Guard.AgainstNull(bus, "bus");
             Guard.AgainstNull(messageConstructor, "messageConstructor");
 
-            bus.SendLocal(messageConstructor, new SendLocalOptions());
+            return bus.SendLocal(messageConstructor, new SendLocalOptions());
         }
     }
 }

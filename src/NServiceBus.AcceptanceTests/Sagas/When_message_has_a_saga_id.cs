@@ -20,7 +20,7 @@
                     sendContext.AddHeader(Headers.SagaId, Guid.NewGuid().ToString());
                     sendContext.AddHeader(Headers.SagaType, typeof(MySaga).AssemblyQualifiedName);
 
-                    bus.SendLocal(message,sendContext);
+                    return bus.SendLocal(message,sendContext);
                 }))
                 .Done(c => c.OtherSagaStarted)
                 .Run();

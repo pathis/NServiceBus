@@ -25,7 +25,7 @@
         public void Should_discard_duplicates_using_the_outbox()
         {
             Scenario.Define<Context>()
-                    .WithEndpoint<NonDtcReceivingEndpoint>(b => b.Given(bus =>
+                    .WithEndpoint<NonDtcReceivingEndpoint>(b => b.Given(async bus =>
                     {
                         var duplicateMessageId = Guid.NewGuid().ToString();
 
@@ -33,9 +33,9 @@
 
                         duplicateSendContext.SetCustomMessageId(duplicateMessageId);
 
-                        bus.SendLocal(new PlaceOrder(), duplicateSendContext);
-                        bus.SendLocal(new PlaceOrder(), duplicateSendContext);
-                        bus.SendLocal(new PlaceOrder());
+                        await bus.SendLocal(new PlaceOrder(), duplicateSendContext);
+                        await bus.SendLocal(new PlaceOrder(), duplicateSendContext);
+                        await bus.SendLocal(new PlaceOrder());
                     }))
                     .AllowExceptions()
                     .Done(c => c.OrderAckReceived >= 2)

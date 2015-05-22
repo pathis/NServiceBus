@@ -16,34 +16,32 @@
 
         public IDeferMessages MessageDeferral { get; set; }
 
-        public override Task Invoke(Context context, Func<Task> next)
+        public override async Task Invoke(Context context, Func<Task> next)
         {
-            InvokeNative(context);
+            await InvokeNative(context);
 
-            return next();
+            await next().ConfigureAwait(false);
         }
 
-        public void InvokeNative(Context context)
+        public Task InvokeNative(Context context)
         {
             var message = new OutgoingMessage(context.MessageId, context.Headers, context.Body);
 
             if (context.Intent == MessageIntentEnum.Publish)
             {
-                NativePublish(new TransportPublishOptions(context.MessageType, context.DeliveryMessageOptions.TimeToBeReceived, context.DeliveryMessageOptions.NonDurable ?? false), message);
+                return NativePublish(new TransportPublishOptions(context.MessageType, context.DeliveryMessageOptions.TimeToBeReceived, context.DeliveryMessageOptions.NonDurable ?? false), message);
             }
-            else
-            {
-                NativeSendOrDefer(context.DeliveryMessageOptions, message);
-            }
+
+            return NativeSendOrDefer(context.DeliveryMessageOptions, message);
         }
 
-        public void NativePublish(TransportPublishOptions publishOptions, OutgoingMessage message)
+        public async Task NativePublish(TransportPublishOptions publishOptions, OutgoingMessage message)
         {
             SetTransportHeaders(publishOptions.TimeToBeReceived, publishOptions.NonDurable, message);
 
             try
             {
-                Publish(message, publishOptions);
+                await Publish(message, publishOptions);
             }
             catch (QueueNotFoundException ex)
             {
@@ -59,13 +57,13 @@
             }
         }
 
-        public void NativeSendOrDefer(DeliveryMessageOptions deliveryMessageOptions, OutgoingMessage message)
+        public async Task NativeSendOrDefer(DeliveryMessageOptions deliveryMessageOptions, OutgoingMessage message)
         {
             SetTransportHeaders(deliveryMessageOptions.TimeToBeReceived, deliveryMessageOptions.NonDurable, message);
 
             try
             {
-                SendOrDefer(message, deliveryMessageOptions as SendMessageOptions);
+                await SendOrDefer(message, deliveryMessageOptions as SendMessageOptions);
             }
             catch (QueueNotFoundException ex)
             {
@@ -97,7 +95,7 @@
             }
         }
 
-        void SendOrDefer(OutgoingMessage message, SendMessageOptions options)
+        Task SendOrDefer(OutgoingMessage message, SendMessageOptions options)
         {
             if ((options.DelayDeliveryFor.HasValue && options.DelayDeliveryFor > TimeSpan.Zero) ||
                 (options.DeliverAt.HasValue && options.DeliverAt.Value.ToUniversalTime() > DateTime.UtcNow))
@@ -110,10 +108,10 @@
                     options.NonDurable ?? true,
                     options.EnlistInReceiveTransaction));
 
-                return;
+                return Task.FromResult(true);
             }
 
-            MessageSender.Send(message, new TransportSendOptions(options.Destination,
+            return MessageSender.Send(message, new TransportSendOptions(options.Destination,
                                                                     options.TimeToBeReceived,
                                                                     options.NonDurable ?? true,
                                                                     options.EnlistInReceiveTransaction));
@@ -124,13 +122,13 @@
             headers[Headers.IsDeferredMessage] = true.ToString();
         }
 
-        void Publish(OutgoingMessage message, TransportPublishOptions publishOptions)
+        Task Publish(OutgoingMessage message, TransportPublishOptions publishOptions)
         {
             if (MessagePublisher == null)
             {
                 throw new InvalidOperationException("No message publisher has been registered. If you're using a transport without native support for pub/sub please enable the message driven publishing feature by calling config.EnableFeature<MessageDrivenSubscriptions>() in your configuration");
             }
-            MessagePublisher.Publish(message, publishOptions);
+            return MessagePublisher.Publish(message, publishOptions);
         }
 
 

@@ -158,6 +158,8 @@
     <Compile Include="Transports\TransportDeferOptions.cs" />
     <Compile Include="Transports\TransportPublishOptions.cs" />
     <Compile Include="Transports\TransportSendOptions.cs" />
+    <Compile Include="Unicast\AsyncLock.cs" />
+    <Compile Include="Unicast\AsyncSemaphore.cs" />
     <Compile Include="Unicast\Behaviors\SagaInvocationResult.cs" />
     <Compile Include="Unicast\Behaviors\TransportReceiveToPhysicalMessageProcessingConnector.cs" />
     <Compile Include="Pipeline\Contexts\LogicalMessageProcessingStageBehavior.cs" />

@@ -16,24 +16,26 @@
             //to avoid processing each others callbacks
             Scenario.Define(() => new Context { Id = Guid.NewGuid() })
                     .WithEndpoint<Client>(b => b.CustomConfig(c => RuntimeEnvironment.MachineNameAction = () => "ClientA")
-                        .Given((bus, context) =>
+                        .Given(async (bus, context) =>
                         {
-                            bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest
+                            await bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest
                             {
                                 Id = context.Id,
                                 Client = RuntimeEnvironment.MachineName
-                            }, new SendOptions())
-                                .ContinueWith(t => context.CallbackAFired = true);
+                            }, new SendOptions());
+
+                            context.CallbackAFired = true;
                         }))
                     .WithEndpoint<Client>(b => b.CustomConfig(c => RuntimeEnvironment.MachineNameAction = () => "ClientB")
-                        .Given((bus, context) =>
+                        .Given(async (bus, context) =>
                         {
-                            bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest
+                            await bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest
                             {
                                 Id = context.Id,
                                 Client = RuntimeEnvironment.MachineName
-                            }, new SendOptions())
-                                .ContinueWith(t => context.CallbackBFired = true);
+                            }, new SendOptions());
+
+                            context.CallbackBFired = true;
                         }))
                     .WithEndpoint<Server>()
                     .Done(c => c.ClientAGotResponse && c.ClientBGotResponse)

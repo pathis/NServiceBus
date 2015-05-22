@@ -3,6 +3,7 @@ namespace NServiceBus.Core.Tests
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
     using NServiceBus.Core.Tests.Features;
     using NServiceBus.Faults;
     using NServiceBus.Hosting;
@@ -141,7 +142,7 @@ namespace NServiceBus.Core.Tests
             public TransportSendOptions OptionsUsed { get; set; }
             public bool ThrowOnSend { get; set; }
 
-            public void Send(OutgoingMessage message, TransportSendOptions sendOptions)
+            public Task Send(OutgoingMessage message, TransportSendOptions sendOptions)
             {
                 MessageSent = message;
                 OptionsUsed = sendOptions;
@@ -150,6 +151,8 @@ namespace NServiceBus.Core.Tests
                 {
                     throw new Exception("Failed to send");
                 }
+
+                return Task.FromResult(true);
             }
         }
     }

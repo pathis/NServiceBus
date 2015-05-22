@@ -22,7 +22,7 @@
                         var sendOptions = new SendLocalOptions();
                         sendOptions.GetExtensions().Set(new SendOptionsExtensions.TestingSendOptionsExtensionBehavior.Context { SomeValue = "I did it!" });
 
-                        bus.SendLocal(new SendMessage(), sendOptions);
+                        return bus.SendLocal(new SendMessage(), sendOptions);
                     }))
                     .Done(c => c.WasCalled)
                     .Run();

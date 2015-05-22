@@ -2,6 +2,7 @@ namespace NServiceBus.Transports.Msmq
 {
     using System;
     using System.Messaging;
+    using System.Threading.Tasks;
     using System.Transactions;
     using NServiceBus.Pipeline;
     using NServiceBus.Transports.Msmq.Config;
@@ -38,7 +39,7 @@ namespace NServiceBus.Transports.Msmq
         /// <summary>
         /// Sends the given <paramref name="message"/>
         /// </summary>
-        public void Send(OutgoingMessage message, TransportSendOptions sendOptions)
+        public Task Send(OutgoingMessage message, TransportSendOptions sendOptions)
         {
             Guard.AgainstNull(message, "message");
             Guard.AgainstNull(sendOptions, "sendOptions");
@@ -76,6 +77,8 @@ namespace NServiceBus.Transports.Msmq
                         q.Send(toSend, transactionType);
                     }
                 }
+
+                return Task.FromResult(true);
             }
             catch (MessageQueueException ex)
             {
@@ -94,6 +97,8 @@ namespace NServiceBus.Transports.Msmq
             {
                 ThrowFailedToSendException(destination, ex);
             }
+
+            return Task.FromResult(true);
         }
 
         static void ThrowFailedToSendException(string address, Exception ex)

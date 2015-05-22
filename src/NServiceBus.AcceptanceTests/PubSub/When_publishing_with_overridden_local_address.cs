@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.PubSub
 {
     using System;
+    using System.Threading.Tasks;
     using EndpointTemplates;
     using AcceptanceTesting;
     using Features;
@@ -22,6 +23,8 @@
 
                             if (context.HasNativePubSubSupport)
                                 context.Subscriber1Subscribed = true;
+
+                            return Task.FromResult(true);
                         }))
                     .Done(c => c.Subscriber1GotTheEvent)
                     .Repeat(r => r.For(Transports.Default))

@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Unicast.Tests
 {
     using System.Threading;
+    using System.Threading.Tasks;
     using NServiceBus.Transports;
     using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
     using NUnit.Framework;
@@ -36,13 +37,15 @@
 
             public AutoResetEvent MessageAvailable { get; private set; }
 
-            public void Send(OutgoingMessage message, TransportSendOptions sendOptions)
+            public Task Send(OutgoingMessage message, TransportSendOptions sendOptions)
             {
                 MessageSent = message;
 
                 SendOptions = sendOptions;
 
                 MessageAvailable.Set();
+
+                return Task.FromResult(true);
             }
         }
 

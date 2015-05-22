@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Runtime.ExceptionServices;
     using System.Threading.Tasks;
     using NServiceBus.Hosting;
     using NServiceBus.Logging;
@@ -20,14 +21,22 @@ namespace NServiceBus
 
         public override async Task Invoke(Context context, Func<Task> next)
         {
+            ExceptionDispatchInfo exceptionInfo = null;
             try
             {
                 await next().ConfigureAwait(false);
             }
             catch (Exception exception)
             {
+                // Need to do it like that until we have CSharp 6 support. Cannot wait inside catch
+                exceptionInfo = ExceptionDispatchInfo.Capture(exception);
+            }
+
+            if (exceptionInfo != null)
+            {
                 try
                 {
+                    var exception = exceptionInfo.SourceException;
                     var message = context.PhysicalMessage;
 
                     Logger.Error("Failed to process message with ID: " + message.Id, exception);
@@ -41,9 +50,10 @@ namespace NServiceBus
                     message.Headers[Headers.HostId] = hostInformation.HostId.ToString("N");
                     message.Headers[Headers.HostDisplayName] = hostInformation.DisplayName;
 
-                    sender.Send(new OutgoingMessage("msg id",message.Headers,message.Body), new TransportSendOptions(errorQueueAddress));
+                    await sender.Send(new OutgoingMessage("msg id", message.Headers, message.Body), new TransportSendOptions(errorQueueAddress))
+                        .ConfigureAwait(false);
 
-                    notifications.Errors.InvokeMessageHasBeenSentToErrorQueue(message,exception);
+                    notifications.Errors.InvokeMessageHasBeenSentToErrorQueue(message, exception);
                 }
                 catch (Exception ex)
                 {

@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.PubSub
 {
     using System;
+    using System.Threading.Tasks;
     using AcceptanceTesting;
     using EndpointTemplates;
     using NUnit.Framework;
@@ -26,7 +27,11 @@
             Scenario.Define<Context>()
                        .WithEndpoint<CentralizedStoragePublisher>(b =>
                        {
-                           b.Given(bus => bus.Subscribe<EventHandledByLocalEndpoint>());
+                           b.Given(bus =>
+                           {
+                               bus.Subscribe<EventHandledByLocalEndpoint>();
+                               return Task.FromResult(true);
+                           });
                            b.When(c => c.EndpointsStarted, (bus, context) => bus.Publish(new EventHandledByLocalEndpoint()));
                        })
                        .Done(c => c.CatchAllHandlerGotTheMessage)

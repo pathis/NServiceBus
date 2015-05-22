@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.PubSub
 {
     using System;
+    using System.Threading.Tasks;
     using EndpointTemplates;
     using AcceptanceTesting;
     using Features;
@@ -24,6 +25,8 @@
                         {
                             context.Subscriber3Subscribed = true;
                         }
+
+                        return Task.FromResult(true);
                     }))
 
                     .Done(c => c.Subscriber3GotTheEvent)
@@ -40,7 +43,7 @@
                         b.When(c => c.Subscriber1Subscribed && c.Subscriber2Subscribed, (bus, c) =>
                         {
                             c.AddTrace("Both subscribers is subscribed, going to publish MyEvent");
-                            bus.Publish(new MyEvent());
+                            return bus.Publish(new MyEvent());
                         })
                      )
                     .WithEndpoint<Subscriber1>(b => b.Given((bus, context) =>
@@ -55,6 +58,7 @@
                             {
                                 context.AddTrace("Subscriber1 has now asked to be subscribed to MyEvent");
                             }
+                            return Task.FromResult(true);
                         }))
                       .WithEndpoint<Subscriber2>(b => b.Given((bus, context) =>
                       {
@@ -69,6 +73,7 @@
                           {
                               context.AddTrace("Subscriber2 has now asked to be subscribed to MyEvent");
                           }
+                          return Task.FromResult(true);
                       }))
                     .Done(c => c.Subscriber1GotTheEvent && c.Subscriber2GotTheEvent)
                     .Repeat(r => r.For(Transports.Default))

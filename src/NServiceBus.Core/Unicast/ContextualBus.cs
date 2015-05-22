@@ -3,6 +3,7 @@ namespace NServiceBus.Unicast
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Janitor;
     using NServiceBus.Extensibility;
     using NServiceBus.Hosting;
@@ -93,15 +94,15 @@ namespace NServiceBus.Unicast
         /// <summary>
         /// <see cref="ISendOnlyBus.Publish"/>
         /// </summary>
-        public void Publish<T>(Action<T> messageConstructor, NServiceBus.PublishOptions options)
+        public Task Publish<T>(Action<T> messageConstructor, NServiceBus.PublishOptions options)
         {
-            Publish(messageMapper.CreateInstance(messageConstructor), options);
+            return Publish(messageMapper.CreateInstance(messageConstructor), options);
         }
 
         /// <summary>
         /// <see cref="ISendOnlyBus.Publish"/>
         /// </summary>
-        public void Publish(object message, NServiceBus.PublishOptions options)
+        public Task Publish(object message, NServiceBus.PublishOptions options)
         {
             var messageType = message.GetType();
 
@@ -126,7 +127,7 @@ namespace NServiceBus.Unicast
                 options.Extensions);
 
 
-            outgoingPipeline.Invoke(outgoingContext).GetAwaiter().GetResult();
+            return outgoingPipeline.Invoke(outgoingContext);
         }
 
         void ApplyStaticHeaders(Dictionary<string, string> messageHeaders)
@@ -209,24 +210,24 @@ namespace NServiceBus.Unicast
         /// <summary>
         /// <see cref="IBus.Reply(object)"/>
         /// </summary>
-        public void Reply(object message)
+        public Task Reply(object message)
         {
             var context = new NServiceBus.SendOptions(correlationId: GetCorrelationId());
 
             context.AsReplyTo(MessageBeingProcessed.ReplyToAddress);
 
-            Send(message, context);
+            return Send(message, context);
         }
 
         /// <summary>
         /// <see cref="IBus.Reply{T}(Action{T})"/>
         /// </summary>
-        public void Reply<T>(Action<T> messageConstructor)
+        public Task Reply<T>(Action<T> messageConstructor)
         {
             var context = new NServiceBus.SendOptions(correlationId: GetCorrelationId());
             context.AsReplyTo(MessageBeingProcessed.ReplyToAddress);
 
-            Send(messageConstructor, context);
+            return Send(messageConstructor, context);
         }
 
         string GetCorrelationId()
@@ -237,14 +238,15 @@ namespace NServiceBus.Unicast
         /// <summary>
         /// <see cref="IBus.HandleCurrentMessageLater"/>
         /// </summary>
-        public void HandleCurrentMessageLater()
+        public async Task HandleCurrentMessageLater()
         {
             if (incomingContext.handleCurrentMessageLaterWasCalled)
             {
                 return;
             }
 
-            messageSender.Send(new OutgoingMessage(MessageBeingProcessed.Id, MessageBeingProcessed.Headers, MessageBeingProcessed.Body), new TransportSendOptions(sendLocalAddress));
+            await messageSender.Send(new OutgoingMessage(MessageBeingProcessed.Id, MessageBeingProcessed.Headers, MessageBeingProcessed.Body), new TransportSendOptions(sendLocalAddress))
+                .ConfigureAwait(false);
 
             incomingContext.handleCurrentMessageLaterWasCalled = true;
 
@@ -254,29 +256,29 @@ namespace NServiceBus.Unicast
         /// <summary>
         /// <see cref="IBus.ForwardCurrentMessageTo(string)"/>
         /// </summary>
-        public void ForwardCurrentMessageTo(string destination)
+        public Task ForwardCurrentMessageTo(string destination)
         {
-            messageSender.Send(new OutgoingMessage(MessageBeingProcessed.Id, MessageBeingProcessed.Headers, MessageBeingProcessed.Body), new TransportSendOptions(destination));
+            return messageSender.Send(new OutgoingMessage(MessageBeingProcessed.Id, MessageBeingProcessed.Headers, MessageBeingProcessed.Body), new TransportSendOptions(destination));
         }
 
-        public void Send<T>(Action<T> messageConstructor, NServiceBus.SendOptions options)
+        public Task Send<T>(Action<T> messageConstructor, NServiceBus.SendOptions options)
         {
-            Send(messageMapper.CreateInstance(messageConstructor), options);
+            return Send(messageMapper.CreateInstance(messageConstructor), options);
         }
 
-        public void Send(object message, NServiceBus.SendOptions options)
+        public Task Send(object message, NServiceBus.SendOptions options)
         {
-            SendMessage(options, message.GetType(), message);
+            return SendMessage(options, message.GetType(), message);
         }
 
-        public void SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
+        public Task SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
         {
-            SendLocal(messageMapper.CreateInstance(messageConstructor), options);
+            return SendLocal(messageMapper.CreateInstance(messageConstructor), options);
         }
 
-        public void SendLocal(object message, SendLocalOptions options)
+        public Task SendLocal(object message, SendLocalOptions options)
         {
-            SendMessage(options, message.GetType(), message);
+            return SendMessage(options, message.GetType(), message);
         }
 
         List<string> GetAtLeastOneAddressForMessageType(Type messageType)
@@ -304,7 +306,7 @@ namespace NServiceBus.Unicast
             return destinations.SingleOrDefault();
         }
 
-        void SendMessage(SendLocalOptions options, Type messageType, object message)
+        Task SendMessage(SendLocalOptions options, Type messageType, object message)
         {
             var destination = sendLocalAddress;
 
@@ -322,10 +324,10 @@ namespace NServiceBus.Unicast
 
             var sendOptions = new SendMessageOptions(destination, deliverAt, delayDeliveryFor);
 
-            SendMessage(options.MessageId, options.CorrelationId, MessageIntentEnum.Send, options.Headers, sendOptions, messageType, message, options.Extensions);
+            return SendMessage(options.MessageId, options.CorrelationId, MessageIntentEnum.Send, options.Headers, sendOptions, messageType, message, options.Extensions);
         }
 
-        void SendMessage(NServiceBus.SendOptions options, Type messageType, object message)
+        Task SendMessage(NServiceBus.SendOptions options, Type messageType, object message)
         {
             var destination = options.Destination;
 
@@ -348,10 +350,10 @@ namespace NServiceBus.Unicast
 
             var sendOptions = new SendMessageOptions(destination, deliverAt, delayDeliveryFor);
 
-            SendMessage(options.MessageId, options.CorrelationId, options.Intent, options.Headers, sendOptions, messageType, message, options.Extensions);
+            return SendMessage(options.MessageId, options.CorrelationId, options.Intent, options.Headers, sendOptions, messageType, message, options.Extensions);
         }
 
-        void SendMessage(string messageId, string correlationId, MessageIntentEnum intent, Dictionary<string, string> messageHeaders, SendMessageOptions sendOptions, Type messageType, object message, OptionExtensionContext context)
+        Task SendMessage(string messageId, string correlationId, MessageIntentEnum intent, Dictionary<string, string> messageHeaders, SendMessageOptions sendOptions, Type messageType, object message, OptionExtensionContext context)
         {
             var headers = new Dictionary<string, string>(messageHeaders);
 
@@ -389,7 +391,7 @@ namespace NServiceBus.Unicast
                 message,
                 context);
 
-            outgoingPipeline.Invoke(outgoingContext).GetAwaiter().GetResult();
+            return outgoingPipeline.Invoke(outgoingContext);
         }
 
         void ApplyHostRelatedHeaders(Dictionary<string, string> headers)

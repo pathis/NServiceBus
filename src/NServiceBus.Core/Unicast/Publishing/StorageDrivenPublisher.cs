@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.Unicast.Publishing
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using Messages;
     using Pipeline;
     using Subscriptions;
@@ -19,7 +20,7 @@
         }
 
 
-        public void Publish(OutgoingMessage message, TransportPublishOptions publishOptions)
+        public async Task Publish(OutgoingMessage message, TransportPublishOptions publishOptions)
         {
             var eventTypesToPublish = messageMetadataRegistry.GetMessageMetadata(publishOptions.EventType)
                 .MessageHierarchy
@@ -38,7 +39,8 @@
 
             foreach (var subscriber in subscribers)
             {
-                messageSender.Send(message, new TransportSendOptions(subscriber,publishOptions.TimeToBeReceived,publishOptions.NonDurable,publishOptions.EnlistInReceiveTransaction));
+                await messageSender.Send(message, new TransportSendOptions(subscriber,publishOptions.TimeToBeReceived,publishOptions.NonDurable,publishOptions.EnlistInReceiveTransaction))
+                    .ConfigureAwait(false);
             }
         }
 

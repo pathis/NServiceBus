@@ -1,6 +1,7 @@
 namespace NServiceBus
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Defines a bus to be used with NServiceBus.
@@ -37,14 +38,14 @@ namespace NServiceBus
         /// Sends the message to the endpoint which sent the message currently being handled on this thread.
         /// </summary>
         /// <param name="message">The message to send.</param>
-        void Reply(object message);
+        Task Reply(object message);
 
         /// <summary>
         /// Instantiates a message of type T and performs a regular <see cref="Reply(object)"/>.
         /// </summary>
         /// <typeparam name="T">The type of message, usually an interface</typeparam>
         /// <param name="messageConstructor">An action which initializes properties of the message</param>
-        void Reply<T>(Action<T> messageConstructor);
+        Task Reply<T>(Action<T> messageConstructor);
 
         /// <summary>
         /// Returns a completion message with the specified error code to the sender
@@ -58,7 +59,7 @@ namespace NServiceBus
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <param name="options">The options for the send.</param>
-        void SendLocal(object message, SendLocalOptions options);
+        Task SendLocal(object message, SendLocalOptions options);
 
         /// <summary>
         /// Instantiates a message of type T and sends it back to the current bus.
@@ -66,7 +67,7 @@ namespace NServiceBus
         /// <typeparam name="T">The type of message, usually an interface.</typeparam>
         /// <param name="messageConstructor">An action which initializes properties of the message</param>
         /// <param name="options">The options for the send.</param>
-        void SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options);
+        Task SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options);
 
         /// <summary>
         /// Defers the processing of the message for the given delay. This feature is using the timeout manager so make sure that you enable timeouts
@@ -88,13 +89,13 @@ namespace NServiceBus
         /// Moves the message being handled to the back of the list of available 
         /// messages so it can be handled later.
         /// </summary>
-        void HandleCurrentMessageLater();
+        Task HandleCurrentMessageLater();
 
         /// <summary>
         /// Forwards the current message being handled to the destination maintaining
         /// all of its transport-level properties and headers.
         /// </summary>
-        void ForwardCurrentMessageTo(string destination);
+        Task ForwardCurrentMessageTo(string destination);
 
         /// <summary>
         /// Tells the bus to stop dispatching the current message to additional

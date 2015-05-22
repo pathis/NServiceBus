@@ -1,5 +1,7 @@
 namespace NServiceBus.Transports
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Requests a message to be published
     /// </summary>
@@ -8,6 +10,6 @@ namespace NServiceBus.Transports
         /// <summary>
         /// Publishes the given messages to all known subscribers
         /// </summary>
-        void Publish(OutgoingMessage message,TransportPublishOptions publishOptions);
+        Task Publish(OutgoingMessage message,TransportPublishOptions publishOptions);
     }
 }

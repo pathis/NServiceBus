@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTesting.Support
 {
     using System;
+    using System.Threading.Tasks;
 
     public class IBusAdapter : IBus
     {
@@ -16,24 +17,24 @@
             sendOnlyBus.Dispose();
         }
 
-        public void Publish(object message,PublishOptions options)
+        public Task Publish(object message,PublishOptions options)
         {
-            sendOnlyBus.Publish(message,options);
+            return sendOnlyBus.Publish(message,options);
         }
 
-        public void Publish<T>(Action<T> messageConstructor,PublishOptions options)
+        public Task Publish<T>(Action<T> messageConstructor, PublishOptions options)
         {
-            sendOnlyBus.Publish(messageConstructor,options);
+            return sendOnlyBus.Publish(messageConstructor, options);
         }
 
-        public void Send(object message, SendOptions options)
+        public Task Send(object message, SendOptions options)
         {
-            sendOnlyBus.Send(message, options);
+            return sendOnlyBus.Send(message, options);
         }
 
-        public void Send<T>(Action<T> messageConstructor, SendOptions options)
+        public Task Send<T>(Action<T> messageConstructor, SendOptions options)
         {
-            sendOnlyBus.Send(messageConstructor, options);
+            return sendOnlyBus.Send(messageConstructor, options);
         }
 
         [Obsolete("", true)]
@@ -92,12 +93,12 @@
             throw new NotImplementedException();
         }
 
-        public void Reply(object message)
+        public Task Reply(object message)
         {
             throw new NotImplementedException();
         }
 
-        public void Reply<T>(Action<T> messageConstructor)
+        public Task Reply<T>(Action<T> messageConstructor)
         {
             throw new NotImplementedException();
         }
@@ -108,12 +109,12 @@
             throw new NotImplementedException();
         }
 
-        public void SendLocal(object message, SendLocalOptions options)
+        public Task SendLocal(object message, SendLocalOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public void SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
+        public Task SendLocal<T>(Action<T> messageConstructor, SendLocalOptions options)
         {
             throw new NotImplementedException();
         }
@@ -130,12 +131,12 @@
             throw new NotImplementedException();
         }
 
-        public void HandleCurrentMessageLater()
+        public Task HandleCurrentMessageLater()
         {
             throw new NotImplementedException();
         }
 
-        public void ForwardCurrentMessageTo(string destination)
+        public Task ForwardCurrentMessageTo(string destination)
         {
             throw new NotImplementedException();
         }

@@ -11,7 +11,6 @@
 
     class OutboxDeduplicationBehavior : PhysicalMessageProcessingStageBehavior
     {
-    
         public OutboxDeduplicationBehavior(IOutboxStorage outboxStorage, DispatchMessageToTransportBehavior defaultDispatcher, DefaultMessageAuditer defaultAuditer, TransactionSettings transactionSettings)
         {
             this.outboxStorage = outboxStorage;
@@ -19,7 +18,6 @@
             this.defaultAuditer = defaultAuditer;
             this.transactionSettings = transactionSettings;
         }
-
 
         public override async Task Invoke(Context context, Func<Task> next)
         {
@@ -47,12 +45,12 @@
                 }
             }
 
-            DispatchOperationToTransport(outboxMessage.TransportOperations);
+            await DispatchOperationToTransport(outboxMessage.TransportOperations).ConfigureAwait(false);
 
             outboxStorage.SetAsDispatched(messageId);
         }
 
-        void DispatchOperationToTransport(IEnumerable<TransportOperation> operations)
+        async Task DispatchOperationToTransport(IEnumerable<TransportOperation> operations)
         {
             foreach (var transportOperation in operations)
             {
@@ -70,13 +68,13 @@
                         defaultAuditer.Audit(new TransportSendOptions(transportOperation.Options["Destination"],null,false,false), message);
                         break;
                     case "Send":
-                        defaultDispatcher.NativeSendOrDefer(deliveryOptions, message);
+                        await defaultDispatcher.NativeSendOrDefer(deliveryOptions, message).ConfigureAwait(false);
                         break;
                     case "Publish":
                         
                         var options= new TransportPublishOptions(Type.GetType(transportOperation.Options["EventType"]));
 
-                        defaultDispatcher.NativePublish(options, message);
+                        await defaultDispatcher.NativePublish(options, message).ConfigureAwait(false);
                         break;
                     default:
                         throw new InvalidOperationException("Unknown operation type: " + operationType);
