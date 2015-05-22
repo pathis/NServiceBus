@@ -21,7 +21,7 @@
 
             if (string.IsNullOrEmpty(messageTypeString) && intent != MessageIntentEnum.Subscribe && intent != MessageIntentEnum.Unsubscribe)
             {
-                await next();
+                await next().ConfigureAwait(false);
                 return;
             }
 

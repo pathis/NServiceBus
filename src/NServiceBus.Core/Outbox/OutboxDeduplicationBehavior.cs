@@ -36,7 +36,7 @@
                 // TODO: We need .NET 4.5.1 here!
                 using (var checkForEscalationScope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = transactionSettings.IsolationLevel, Timeout = transactionSettings.TransactionTimeout }))
                 {
-                    await next();
+                    await next().ConfigureAwait(false);
                     checkForEscalationScope.Complete();
                 }
 

@@ -53,7 +53,7 @@ namespace NServiceBus
             {
                 dispatchMessageToTransportBehavior.InvokeNative(context);
 
-                await next();
+                await next().ConfigureAwait(false);
             }
         }
     }

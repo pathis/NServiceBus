@@ -12,7 +12,7 @@
         {
             context.PhysicalMessage.Headers[Headers.HasLicenseExpired] = true.ToString().ToLower();
 
-            await next();
+            await next().ConfigureAwait(false);
 
             if (Debugger.IsAttached)
             {

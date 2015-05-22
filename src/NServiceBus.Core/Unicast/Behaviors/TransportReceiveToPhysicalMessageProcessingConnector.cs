@@ -37,7 +37,7 @@ namespace NServiceBus
             var physicalMessageContext = new PhysicalMessageProcessingStageBehavior.Context(context);
             try
             {
-                await next(physicalMessageContext);
+                await next(physicalMessageContext).ConfigureAwait(false);
                 if (physicalMessageContext.AbortReceiveOperation)
                 {
                     throw new MessageProcessingAbortedException();

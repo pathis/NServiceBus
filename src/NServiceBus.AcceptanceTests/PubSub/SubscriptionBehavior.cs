@@ -33,7 +33,7 @@
 
         public override async Task Invoke(Context context, Func<Task> next)
         {
-            await next();
+            await next().ConfigureAwait(false);
             var subscriptionMessageType = GetSubscriptionMessageTypeFrom(context.PhysicalMessage);
             if (subscriptionMessageType != null)
             {

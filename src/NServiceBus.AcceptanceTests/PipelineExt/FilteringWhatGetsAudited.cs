@@ -88,7 +88,7 @@ namespace NServiceBus.AcceptanceTests.PipelineExt
                 {
                     var auditResult = new AuditFilterResult();
                     context.Set(auditResult);
-                    await next();
+                    await next().ConfigureAwait(false);
 
                     //note: and rule operating on the raw TransportMessage can be applied here if needed.
                     // Access to the message is through: context.PhysicalMessage. Eg:  context.PhysicalMessage.Headers.ContainsKey("NServiceBus.ControlMessage")

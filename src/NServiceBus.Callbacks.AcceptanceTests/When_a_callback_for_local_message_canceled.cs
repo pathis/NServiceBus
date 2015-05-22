@@ -23,7 +23,7 @@ namespace NServiceBus.AcceptanceTests.Callbacks
 
                             try
                             {
-                                await response;
+                                await response.ConfigureAwait(false);
                                 context.CallbackFired = true;
                             }
                             catch (OperationCanceledException e)

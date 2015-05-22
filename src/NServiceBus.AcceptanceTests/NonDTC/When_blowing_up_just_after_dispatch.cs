@@ -87,7 +87,7 @@
         {
             if (!context.PhysicalMessage.Headers[Headers.EnclosedMessageTypes].Contains(typeof(When_blowing_up_just_after_dispatch.PlaceOrder).Name))
             {
-                await next();
+                await next().ConfigureAwait(false);
                 return;
             }
 
@@ -99,7 +99,7 @@
 
             }
 
-            await next();
+            await next().ConfigureAwait(false);
 
 
             called = true;

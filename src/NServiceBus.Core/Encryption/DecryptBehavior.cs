@@ -19,13 +19,13 @@ namespace NServiceBus
         {
             if (TransportMessageExtensions.IsControlMessage(context.Headers))
             {
-                await next();
+                await next().ConfigureAwait(false);
                 return;
             }
             var current = context.IncomingLogicalMessage.Instance;
             current = messageMutator.MutateIncoming(current);
             context.IncomingLogicalMessage.UpdateMessageInstance(current);
-            await next();
+            await next().ConfigureAwait(false);
         }
 
         public class DecryptRegistration : RegisterStep

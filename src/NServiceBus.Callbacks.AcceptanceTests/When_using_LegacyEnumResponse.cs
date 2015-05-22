@@ -17,7 +17,7 @@
                     {
                         var response = bus.RequestWithTransientlyHandledResponseAsync<LegacyEnumResponse<OldEnum>>(new MyRequest(), new SendOptions());
 
-                        c.Response = await response;
+                        c.Response = await response.ConfigureAwait(false);
                         c.CallbackFired = true;
                     }))
                 .WithEndpoint<Replier>()

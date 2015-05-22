@@ -32,7 +32,7 @@ namespace NServiceBus
         {
             try
             {
-                await next();
+                await next().ConfigureAwait(false);
             }
             catch (MessageDeserializationException)
             {

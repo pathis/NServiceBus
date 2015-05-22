@@ -17,7 +17,7 @@
                         var options = new SendLocalOptions()
                             .SetCustomMessageId(id);
 
-                        await bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest(), options);
+                        await bus.RequestWithTransientlyHandledResponseAsync<MyResponse>(new MyRequest(), options).ConfigureAwait(false);
 
                         c.CallbackFired = true;
                     }))

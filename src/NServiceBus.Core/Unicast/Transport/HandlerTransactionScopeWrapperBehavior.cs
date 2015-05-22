@@ -19,14 +19,14 @@ namespace NServiceBus
         {
             if (Transaction.Current != null)
             {
-                await next();
+                await next().ConfigureAwait(false);
                 return;
             }
 
             // TODO: We need .NET 4.5.1 here!
             using (var tx = new TransactionScope(TransactionScopeOption.Required, transactionOptions))
             {
-                await next();
+                await next().ConfigureAwait(false);
 
                 tx.Complete();
             }

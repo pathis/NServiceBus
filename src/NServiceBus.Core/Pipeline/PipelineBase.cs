@@ -44,7 +44,7 @@
         {
             foreach (var result in behaviors.Select(x => x.Warmup()))
             {
-                await result;
+                await result.ConfigureAwait(false);
             }
         }
 
@@ -52,7 +52,7 @@
         {
             foreach (var result in behaviors.Select(x => x.Cooldown()))
             {
-                await result;
+                await result.ConfigureAwait(false);
             }
         }
 

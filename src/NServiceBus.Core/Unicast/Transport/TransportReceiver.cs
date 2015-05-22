@@ -90,7 +90,7 @@ namespace NServiceBus.Unicast.Transport
 
             var dequeueInfo = receiver.Init(dequeueSettings);
             pipeline.Initialize(new PipelineInfo(id, dequeueInfo.PublicAddress));
-            await pipeline.Warmup();
+            await pipeline.Warmup().ConfigureAwait(false);
 
             StartReceiver();
 
@@ -108,7 +108,7 @@ namespace NServiceBus.Unicast.Transport
             }
 
             receiver.Stop();
-            await pipeline.Cooldown();
+            await pipeline.Cooldown().ConfigureAwait(false);
 
             isStarted = false;
         }
